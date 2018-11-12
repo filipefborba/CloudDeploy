@@ -1,0 +1,15 @@
+#!/bin/sh
+echo "cloning project"
+git clone https://github.com/filipefborba/cloud-aps01.git
+echo "cding to folder"
+cd cloud-aps01/
+echo "running sudo apt-get -y update"
+sudo apt-get -y update
+echo "running sudo apt-get install -y python3-pip"
+sudo apt-get install -y python3-pip
+echo "running sudo pip3 install flask"
+sudo pip3 install flask
+echo "Exporting variables"
+export APP_URL="http://0.0.0.0:5000/"
+echo "starting flask app"
+python3 app.py

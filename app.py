@@ -1,6 +1,7 @@
 from flask import Flask, request, Response
 from tasks import *
 import json
+import os
 
 app = Flask(__name__)
 
@@ -26,7 +27,7 @@ def tarefa_id(id_key):
     global task_dict
     global id_dict
     id = int(id_key)
-    
+
     if request.method == 'PUT':
         data = request.get_json(force=True)
         if id in task_dict:
@@ -43,6 +44,5 @@ def tarefa_id(id_key):
             return Response(status=204)
     else:
         return json.dumps(task_dict[int(id)].__dict__)
-    
 
-app.run(debug=True, use_reloader=True)
+app.run(host=os.environ["APP_URL"], port=5000)
