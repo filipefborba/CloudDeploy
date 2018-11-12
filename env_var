@@ -1,8 +1,4 @@
 #!/bin/sh
-echo "cloning project"
-git clone https://github.com/filipefborba/cloud-aps01.git
-echo "cding to folder"
-cd cloud-aps01/
 echo "running sudo apt-get -y update"
 sudo apt-get -y update
 echo "running sudo apt-get install -y python3-pip"
