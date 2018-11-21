@@ -6,6 +6,6 @@ sudo apt-get install -y python3-pip
 echo "running sudo pip3 install flask"
 sudo pip3 install flask
 echo "Exporting variables"
-export APP_URL="http://0.0.0.0:5000/"
+export APP_URL="0.0.0.0"
 echo "starting flask app"
 python3 app.py
