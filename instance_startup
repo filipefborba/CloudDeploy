@@ -1,7 +1,0 @@
-#!/bin/sh
-echo "cloning project"
-git clone https://github.com/filipefborba/cloud-aps01.git
-echo "cding to folder"
-cd cloud-aps01/
-echo "running env_var script"
-source env_var
