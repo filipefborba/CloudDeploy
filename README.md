@@ -6,7 +6,7 @@ Computação em Nuvem
 ## Sumário
 
 - [Programa](#programa)
-- [Como executar](#comoexecutar)
+- [Como executar](#como-executar)
 
 ## Programa
 
