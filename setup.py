@@ -124,10 +124,12 @@ def launch_lb():
             """#!/bin/bash
             sudo apt-get -y update 
             sudo apt-get install -y python3-pip
+            sudo pip3 install flask
             sudo pip3 install boto3
             cd
             git clone https://github.com/filipefborba/CloudDeploy.git
             cd CloudDeploy/
+            export APP_URL="0.0.0.0"
             python3 load_balancer.py {0} {1} {2} {3} {4} {5}
             """.format(OWNER_NAME, KEY_PAIR_NAME, SEC_GROUP_NAME, INSTANCE_COUNT, AWSACCESSKEYID, AWSSECRETACCESSKEY))
         print("Load Balancer creation response: \n", instance)
@@ -142,9 +144,26 @@ def launch_lb():
         print("An error occured while trying to create a Load Balancer")
         print(e)
 
+def get_lb_ip():
+    try:
+        existing_instances = ec2.describe_instances()
+        running_instances = list(existing_instances.values())[0]
+        for instances_group in running_instances:
+            instances = instances_group["Instances"]
+            for i in instances:
+                if (i["State"]["Code"] == 16):
+                    for t in i["Tags"]:
+                        if(t["Key"] == "Owner" and t["Value"] == OWNER_NAME+"_LB"):
+                            print("Load Balancer: ", i["PublicIpAddress"])
+                            return i["PublicIpAddress"]
+    except ClientError as e:
+            print("An error occured while trying to list the instances.")
+            print(e)
+
 def main():
     delete_old_lb()
     create_credentials()
     launch_lb()
+    get_lb_ip()
 
 main()

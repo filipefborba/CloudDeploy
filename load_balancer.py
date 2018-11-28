@@ -17,7 +17,7 @@ OWNER_NAME = sys.argv[1]
 KEY_PAIR_NAME = sys.argv[2]
 SEC_GROUP_NAME = sys.argv[3]
 SEC_GROUP_ID = ""
-INSTANCE_COUNT = sys.argv[4]
+INSTANCE_COUNT = int(sys.argv[4])
 AWSACCESSKEYID = sys.argv[5]
 AWSSECRETACCESSKEY = sys.argv[6]
 
@@ -74,13 +74,11 @@ def recreate_intances(shutdown_id):
                 }],
             UserData=
             """#!/bin/bash
-            echo "cloning project"
-            git clone https://github.com/filipefborba/cloud-aps01.git
-            echo "cding to folder"
-            cd cloud-aps01/
-            echo "running env_var script"
-            source env_var
-        """)
+            cd
+            git clone https://github.com/filipefborba/CloudDeploy.git
+            cd CloudDeploy/
+            source setup_app
+            """)
         print("Instance creation response: \n", instance)
         print("Wait while instance is created. This may take a moment...")
         running_id = instance["Instances"][0]["InstanceId"]
@@ -91,43 +89,42 @@ def recreate_intances(shutdown_id):
     except ClientError as e:
         print("An error occured while trying to create an Instance")
         print(e)
-    
-    def init():
-        if not AVAILABLE_INSTANCES:
-            ######### CREATE INSTANCES #############
-            try:
-                deployed_instances_ids = []
-                instance = ec2.run_instances(
-                    ImageId="ami-0ac019f4fcb7cb7e6", #Ubuntu 18.04
-                    MinCount=INSTANCE_COUNT, MaxCount=INSTANCE_COUNT,
-                    InstanceType="t2.micro",
-                    KeyName=KEY_PAIR_NAME,
-                    SecurityGroupIds=[SEC_GROUP_ID],
-                    TagSpecifications=[{
-                        "ResourceType": "instance",
-                        "Tags": [{"Key": "Owner","Value": OWNER_NAME}]
-                        }],
-                    UserData=
-                    """#!/bin/bash
-                    cd
-                    git clone https://github.com/filipefborba/CloudDeploy.git
-                    cd CloudDeploy/
-                    source setup_app
-                    """)
-                print("Instance creation response: \n", instance)
-                print("Wait while instance is created. This may take a moment...")
-                deployed_instances = list(instance.values())[1]
-                for i in deployed_instances:
-                    deployed_instances_ids.append(i["InstanceId"])
-                WAITER_RUNNING.wait(InstanceIds=deployed_instances_ids)
-                print("Instance created. Warmup sleeping for a while...")
-                sleep(20)
-            except ClientError as e:
-                print("An error occured while trying to create an Instance")
-                print(e)
-        else:
-            print("Instances available. Not running 'init' ")
-            
+
+def init():
+    if not AVAILABLE_INSTANCES:
+        ######### CREATE INSTANCES #############
+        try:
+            deployed_instances_ids = []
+            instance = ec2.run_instances(
+                ImageId="ami-0ac019f4fcb7cb7e6", #Ubuntu 18.04
+                MinCount=INSTANCE_COUNT, MaxCount=INSTANCE_COUNT,
+                InstanceType="t2.micro",
+                KeyName=KEY_PAIR_NAME,
+                SecurityGroupIds=[SEC_GROUP_ID],
+                TagSpecifications=[{
+                    "ResourceType": "instance",
+                    "Tags": [{"Key": "Owner","Value": OWNER_NAME}]
+                    }],
+                UserData=
+                """#!/bin/bash
+                cd
+                git clone https://github.com/filipefborba/CloudDeploy.git
+                cd CloudDeploy/
+                source setup_app
+                """)
+            print("Instance creation response: \n", instance)
+            print("Wait while instance is created. This may take a moment...")
+            deployed_instances = list(instance.values())[1]
+            for i in deployed_instances:
+                deployed_instances_ids.append(i["InstanceId"])
+            WAITER_RUNNING.wait(InstanceIds=deployed_instances_ids)
+            print("Instance created. Warmup sleeping for a while...")
+            sleep(20)
+        except ClientError as e:
+            print("An error occured while trying to create an Instance")
+            print(e)
+    else:
+        print("Instances available. Not running 'init' ")
 
 ### THREADING ###
 def health_checker():
@@ -144,9 +141,9 @@ def health_checker():
                 if ip == instance_ip:
                     shutdown_id = id
             AVAILABLE_INSTANCES.pop(shutdown_id)
-            t = Timer(5.0, health_checker).start()
+            t = Timer(30.0, health_checker).start()
             recreate_intances(shutdown_id)
-    t = Timer(5.0, health_checker).start()
+    t = Timer(30.0, health_checker).start()
     
 
 def load_balance(path):
@@ -168,6 +165,6 @@ def catch_all(path):
 # Main
 get_instances()
 init()
-t = Timer(5.0, health_checker)
+t = Timer(30.0, health_checker)
 t.start()
 app.run(host=os.environ["APP_URL"], port=5000)
