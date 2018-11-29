@@ -144,10 +144,9 @@ def health_checker():
             t = Timer(30.0, health_checker).start()
             recreate_intances(shutdown_id)
     t = Timer(30.0, health_checker).start()
-    
 
 def load_balance(path):
-    global REQUEST_COUNT, INSTANCES_IPS, REGISTERED_INSTANCES 
+    global REQUEST_COUNT, INSTANCES_IPS, REGISTERED_INSTANCES
     INSTANCES_IPS = list(AVAILABLE_INSTANCES.values())
     REGISTERED_INSTANCES = len(INSTANCES_IPS)
     ip = INSTANCES_IPS[REQUEST_COUNT % REGISTERED_INSTANCES]
@@ -156,10 +155,12 @@ def load_balance(path):
 
 app = Flask(__name__)
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
+@app.route('/', defaults={'path': ''}, methods=["GET", "POST", "PUT", "DELETE"])
+@app.route('/<path:path>', methods=["GET", "POST", "PUT", "DELETE"])
 def catch_all(path):
     load = load_balance(path)
+    print(load)
+    print(path)
     return load
 
 # Main
