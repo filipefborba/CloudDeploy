@@ -152,7 +152,7 @@ def load_balance(path):
     REGISTERED_INSTANCES = len(INSTANCES_IPS)
     ip = INSTANCES_IPS[REQUEST_COUNT % REGISTERED_INSTANCES]
     REQUEST_COUNT += 1
-    return redirect("http://" + ip + ":5000/" + path)
+    return redirect("http://" + ip + ":5000/" + path, code=307)
 
 app = Flask(__name__)
 
