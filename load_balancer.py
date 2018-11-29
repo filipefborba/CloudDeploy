@@ -120,6 +120,7 @@ def init():
             WAITER_RUNNING.wait(InstanceIds=deployed_instances_ids)
             print("Instance created. Warmup sleeping for a while...")
             sleep(20)
+            get_instances()
         except ClientError as e:
             print("An error occured while trying to create an Instance")
             print(e)
