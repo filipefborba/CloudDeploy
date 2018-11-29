@@ -130,7 +130,7 @@ def launch_lb():
                 "ResourceType": "instance",
                 "Tags": [{"Key": "Owner","Value": OWNER_NAME+"_LB"}]
                 }],
-            UserData=user_data
+            UserData=user_data)
         print("User Data: ", user_data)
         print("Load Balancer creation response: \n", instance)
         print("Wait while Load Balancer is created. This may take a moment...")
