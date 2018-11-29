@@ -110,6 +110,16 @@ def create_credentials():
 def launch_lb():
     try:
         deployed_instances_ids = []
+        user_data = """#!/bin/bash
+        sudo apt-get -y update 
+        sudo apt-get install -y python3-pip
+        sudo pip3 install flask
+        sudo pip3 install boto3
+        cd
+        git clone https://github.com/filipefborba/CloudDeploy.git
+        cd CloudDeploy/
+        python3 load_balancer.py {0} {1} {2} {3} {4} {5}
+        """.format(OWNER_NAME, KEY_PAIR_NAME, SEC_GROUP_NAME, INSTANCE_COUNT, AWSACCESSKEYID, AWSSECRETACCESSKEY)
         instance = ec2.run_instances(
             ImageId="ami-0ac019f4fcb7cb7e6", #Ubuntu 18.04
             MinCount=1, MaxCount=1,
@@ -120,17 +130,8 @@ def launch_lb():
                 "ResourceType": "instance",
                 "Tags": [{"Key": "Owner","Value": OWNER_NAME+"_LB"}]
                 }],
-            UserData=
-            """#!/bin/bash
-            sudo apt-get -y update 
-            sudo apt-get install -y python3-pip
-            sudo pip3 install flask
-            sudo pip3 install boto3
-            cd
-            git clone https://github.com/filipefborba/CloudDeploy.git
-            cd CloudDeploy/
-            python3 load_balancer.py {0} {1} {2} {3} {4} {5}
-            """.format(OWNER_NAME, KEY_PAIR_NAME, SEC_GROUP_NAME, INSTANCE_COUNT, AWSACCESSKEYID, AWSSECRETACCESSKEY))
+            UserData=user_data
+        print("User Data: ", user_data)
         print("Load Balancer creation response: \n", instance)
         print("Wait while Load Balancer is created. This may take a moment...")
         deployed_instances = list(instance.values())[1]
