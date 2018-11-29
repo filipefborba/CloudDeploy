@@ -159,8 +159,6 @@ app = Flask(__name__)
 @app.route('/<path:path>', methods=["GET", "POST", "PUT", "DELETE"])
 def catch_all(path):
     load = load_balance(path)
-    print(load)
-    print(path)
     return load
 
 # Main
