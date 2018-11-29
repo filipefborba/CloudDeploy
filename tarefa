@@ -19,31 +19,31 @@ def main():
             try:
                 task_name = sys.argv[2]
                 payload = {"nome" : task_name}
-                r = requests.post(APP_URL + "Tarefa", data=json.dumps(payload))
+                r = requests.post("http://" + APP_URL + "/Tarefa", data=json.dumps(payload))
                 try:
-                    print(r.json())
+                    print(r.text)
                 except:
                     print("Ocorreu um erro ao tentar adicionar uma nova tarefa.")
             except:
                 print("Comando inválido. Utilize tarefa '-h' para mais informações de uso.")
         elif (sys.argv[1] == "listar"):
-            r = requests.get(APP_URL + "Tarefa")
+            r = requests.get("http://" + APP_URL + "/Tarefa")
             try:
-                print(r.json())
+                print(r.text)
             except:
                 print("Ocorreu um erro ao tentar listar as tarefas.")
         elif (sys.argv[1] == "buscar"):
             try:
-                r = requests.get(APP_URL + "Tarefa/" + sys.argv[2])
+                r = requests.get("http://" + APP_URL + "/Tarefa/" + sys.argv[2])
                 try:
-                    print(r.json())
+                    print(r.text)
                 except:
                     print("Ocorreu um erro ao tentar buscar uma tarefa.")
             except:
                 print("Comando inválido. Utilize tarefa '-h' para mais informações de uso.")
         elif (sys.argv[1] == "apagar"):
             try:
-                r = requests.delete(APP_URL + "Tarefa/" + sys.argv[2])
+                r = requests.delete("http://" + APP_URL + "/Tarefa/" + sys.argv[2])
                 if (r.status_code == 200):
                     print("Tarefa deletada com sucesso.")
                 else:
@@ -55,7 +55,7 @@ def main():
                 task_id = sys.argv[2]
                 task_name = sys.argv[3]
                 payload = {"nome" : task_name}
-                r = requests.put(APP_URL + "Tarefa/" + task_id, data=json.dumps(payload))
+                r = requests.put("http://" + APP_URL + "/Tarefa/" + task_id, data=json.dumps(payload))
                 if (r.status_code == 200):
                     print("Tarefa atualizada com sucesso.")
                 else:
