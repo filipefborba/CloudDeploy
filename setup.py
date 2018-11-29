@@ -129,7 +129,6 @@ def launch_lb():
             cd
             git clone https://github.com/filipefborba/CloudDeploy.git
             cd CloudDeploy/
-            export APP_URL=0.0.0.0
             python3 load_balancer.py {0} {1} {2} {3} {4} {5}
             """.format(OWNER_NAME, KEY_PAIR_NAME, SEC_GROUP_NAME, INSTANCE_COUNT, AWSACCESSKEYID, AWSSECRETACCESSKEY))
         print("Load Balancer creation response: \n", instance)
